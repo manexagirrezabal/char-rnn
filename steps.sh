@@ -7,5 +7,3 @@ th train.lua -seq_length 27 -batch_size 10 -print_every 40 -eval_val_every 100
 
 th train.lua -print_every 40 -eval_val_every 100 -losslog logs/dpbx2-default.txt
 th train.lua -seq_length 27 -batch_size 10 -print_every 40 -eval_val_every 100 -losslog logs/dpbx2-seq_len27-batch_size10.txt
-th train.lua -seq_length 27 -batch_size 20 -print_every 40 -eval_val_every 100 -losslog logs/dpbx2-seq_len27-batch_size20.txt
-th train.lua -seq_length 27 -batch_size 30 -print_every 40 -eval_val_every 100 -losslog logs/dpbx2-seq_len27-batch_size30.txt
