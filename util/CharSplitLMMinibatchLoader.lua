@@ -43,7 +43,7 @@ function CharSplitLMMinibatchLoader.create(data_dir, batch_size, seq_length, spl
     self.vocab_mapping = torch.load(vocab_file)
 
     -- cut off the end so that it divides evenly
-    local len = data:size(1)
+    local len = data:size(1) --MANEX: Size of dimension 1
     if len % (batch_size * seq_length) ~= 0 then
         print('cutting off end of data so that the batches/sequences divide evenly')
         data = data:sub(1, batch_size * seq_length 

@@ -58,6 +58,7 @@ cmd:option('-print_every',1,'how many steps/minibatches between printing out the
 cmd:option('-eval_val_every',1000,'every how many iterations should we evaluate on validation data?')
 cmd:option('-checkpoint_dir', 'cv', 'output directory where checkpoints get written')
 cmd:option('-savefile','lstm','filename to autosave the checkpont to. Will be inside checkpoint_dir/')
+cmd:option('-losslog','out.txt','filename to save the train/val loss, every {eval_val_every} times. Will be in current directory')
 cmd:option('-accurate_gpu_timing',0,'set this flag to 1 to get precise timings when using GPU. Might make code bit slower but reports accurate timings.')
 -- GPU/CPU
 cmd:option('-gpuid',0,'which gpu to use. -1 = use CPU')
@@ -352,6 +353,9 @@ for i = 1, iterations do
         checkpoint.epoch = epoch
         checkpoint.vocab = loader.vocab_mapping
         torch.save(savefile, checkpoint)
+        file = io.open (opt.losslog, "a")
+        file:write(epoch," ",train_loss," ",val_loss,"\n")
+        file:close()
     end
 
     if i % opt.print_every == 0 then
