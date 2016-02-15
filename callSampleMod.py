@@ -42,6 +42,7 @@ mapping['O']='++'
 mapping['P']='-'
 mapping['Q']='+'
 
+
 def divide (str):
     if str != '':
         #print "DIVIDE"
@@ -72,7 +73,8 @@ def get(tup, posit, defval):
 
 #classes = set([get(el,1, "<UNK>") for line in lines for el in line])
 classes = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q']
-rawinput=False
+rawinput=len(sys.argv)==2
+
 
 if rawinput:
 
@@ -127,8 +129,8 @@ else:
     print "LABELS: "+' '.join([mapping.get(i,"<UNK>") for i in list(classes)])
 #    prf1s = precision_recall_fscore_support(y_true, y_pred, labels=["J","M","N","P","Q","H","I","A","B","C","D","E","F","G","K","L","O"])
     prf1s = precision_recall_fscore_support(y_true, y_pred)
-    prf1smi = precision_recall_fscore_support(y_true, y_pred, average='micro')
-    prf1sma = precision_recall_fscore_support(y_true, y_pred, average='macro')
+    prf1smi = precision_recall_fscore_support(y_true, y_pred, average='micro', pos_label=None)
+    prf1sma = precision_recall_fscore_support(y_true, y_pred, average='macro', pos_label=None)
     print prf1s
     print "MICRO,"+unicode(prf1smi[0])+","+unicode(prf1smi[1])+","+unicode(prf1smi[2])
     print "MACRO,"+unicode(prf1sma[0])+","+unicode(prf1sma[1])+","+unicode(prf1sma[2])

@@ -1,7 +1,7 @@
 for i in ~/Dropbox/poetryCorpora/trainTestSet2/train/*.xml; do python ~/train/corpusReader2.py $i; done >dpbx2-train.nn
 ./mapPatts.sh dpbx2-train.nn > dpbx2-train.nn.patt.nonl
 rm dpbx2-train.nn
-rm data/tinyshakespeare/input.txt
+rm data/tinyshakespeare/*
 ln -s ~/char-rnn/dpbx2-train.nn.patt.nonl data/tinyshakespeare/input.txt
 th train.lua -seq_length 27 -batch_size 10 -print_every 40 -eval_val_every 100
 
