@@ -41,28 +41,34 @@ mapping['N']='+-'
 mapping['O']='++'
 mapping['P']='-'
 mapping['Q']='+'
+mapping['-']='-'
+mapping['=']='='
+mapping['+']='+'
+
 
 
 def divide (str):
-    if str != '':
-        #print "DIVIDE"
-        pat= re.search("(\w+)_(.)", str)
-        #print "-"
-        if pat != None:
-#            print str
-#            print (pat.group(1), pat.group(2))
-            return (pat.group(1), pat.group(2))
+#    if str != '':
+#        pat= re.search("(\w+)_(.)", str)
+#        if pat != None:
+#            return (pat.group(1), pat.group(2))
+    pat = str.split("_")
+    if len(pat)>1:
+        return (pat[0],pat[1])
 
 def lastchar(st):
     return st[len(st)-1]
 
 #model ="cv/lm_lstm_epoch50.00_1.5602.t7"
 model = sys.argv[1]
+print "Working with this model:",model
 def makepred (input):
-    comm = "th samplemod.lua "+model+" -gpuid -1 -primetext '"+input+"_' -length 1 -verbose 0"
-    #print comm
-    res = os.popen(comm)
-    return unicode(lastchar(res.read().strip()))
+    comm = "th samplemod.lua "+model+" -gpuid -1 -primetext \""+input.replace("\"", "\\\"")+"_\" -length 1 -verbose 0"
+#    print comm.encode("utf8")
+    res = os.popen(comm.encode("utf8"))
+    #http://stackoverflow.com/questions/26541968/delete-every-non-utf-8-symbols-froms-string
+    restxt=res.read().decode("utf8",'ignore')
+    return unicode(lastchar(restxt.strip()))
 
 def get(tup, posit, defval):
     
@@ -73,23 +79,25 @@ def get(tup, posit, defval):
 
 #classes = set([get(el,1, "<UNK>") for line in lines for el in line])
 classes = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q']
+#classes = ['-','+']
+classes = ['=','+']
 rawinput=len(sys.argv)==2
 
 
 if rawinput:
 
     phrase=""
-    input=raw_input()
+    input=raw_input().decode("utf8")
     while input:
         phrase = phrase+input
-        comm = "th samplemod.lua "+model+" -gpuid -1 -primetext '"+phrase+"_' -length 1 -verbose 0"
-        print comm
-        pred = os.popen(comm).read().rstrip()
+        comm = "th samplemod.lua "+model+" -gpuid -1 -primetext \""+phrase.replace("\"", "\\\"")+"_\" -length 1 -verbose 0"
+        print comm.encode("utf8")
+        pred = os.popen(comm.encode("utf8")).read().rstrip()
         print pred+mapping[pred[len(pred)-1]]
         phrase = phrase+"_"+pred[len(pred)-1]+" "
 #        print phrase
 #        print res.read()
-        input = raw_input()
+        input = raw_input().decode("utf8")
 
 
 else:
@@ -108,14 +116,14 @@ else:
             for word in line:
                 if word != None:
                     phrase = phrase+word[0]
-#                    print phrase
+                    #print phrase
                     pred=makepred (phrase)
 #                    print pred
 #                    print pred, word[1], pred==word[1]
                     y_true.append(word[1])
                     y_pred.append(pred)
                     if pred not in classes:
-                        print "The unknown:"+pred+"-"
+                        print "The unknown:"+pred.encode("utf8")+"-"
                     phrase = phrase+"_"+pred+" "
 #                else: #When None comes, it means that there's an empty line, so let's set our seed to the empty string
 #                    phrase = ''
@@ -125,8 +133,9 @@ else:
             phrase= ''
             progress.update(kont)
 
-    print sorted(list(set(y_pred).union(set(y_true))))
-    print "LABELS: "+' '.join([mapping.get(i,"<UNK>") for i in list(classes)])
+#    print sorted(list(set(y_pred).union(set(y_true))))
+#    print "LABELS: "+' '.join([mapping.get(i,"<UNK>") for i in list(classes)])
+
 #    prf1s = precision_recall_fscore_support(y_true, y_pred, labels=["J","M","N","P","Q","H","I","A","B","C","D","E","F","G","K","L","O"])
     prf1s = precision_recall_fscore_support(y_true, y_pred)
     prf1smi = precision_recall_fscore_support(y_true, y_pred, average='micro', pos_label=None)
